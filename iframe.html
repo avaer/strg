@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<body>
+<script>
+let db = null;
+const queue = [];
+const _handleMessage = data => {
+  const {id, method, args} = data;
+
+  switch (method) {
+    case 'get': {
+      const {key} = args;
+
+      const transaction = db.transaction(["data"], "readonly");
+      const objectStore = transaction.objectStore("data");
+      const request = objectStore.get(key);
+      request.onsuccess = e => {
+        parent.postMessage({
+          id,
+          result: e.target.result.value,
+        }, '*');
+      };
+      request.onerror = e => {
+        parent.postMessage({
+          id,
+          error: e.target.error,
+        }, '*');
+      };
+
+      break;
+    }
+    case 'set': {
+      const {key, value} = args;
+
+      const transaction = db.transaction(["data"], "readwrite");
+      const objectStore = transaction.objectStore("data");
+      objectStore.put({
+        key,
+        value,
+      });
+      transaction.oncomplete = e => {
+        parent.postMessage({
+          id,
+          result: null,
+        }, '*');
+      };
+      transaction.onerror = e => {
+        parent.postMessage({
+          id,
+          error: e.target.error,
+        }, '*');
+      };
+
+      break;
+    }
+    case 'remove': {
+      const {key} = args;
+
+      const transaction = db.transaction(["data"], "readwrite");
+      const objectStore = transaction.objectStore("data");
+      objectStore.delete(key);
+      transaction.oncomplete = e => {
+        parent.postMessage({
+          id,
+          result: null,
+        }, '*');
+      };
+      transaction.onerror = e => {
+        parent.postMessage({
+          id,
+          error: e.target.error,
+        }, '*');
+      };
+
+      break;
+    }
+    default: {
+      
+    }
+  }
+};
+window.addEventListener('message', e => {
+  const {data} = e;
+  if (db) {
+    _handleMessage(data);
+  } else {
+    queue.push(data);
+  }
+});
+
+const request = window.indexedDB.open('database', 1);
+request.onsuccess = e => {  
+  db = e.target.result;
+
+  for (let i = 0; i < queue.length; i++) {
+    _handleMessage(queue[i]);
+  }
+  queue.length = 0;
+};
+request.onerror = e => {
+  console.warn(e.target.error);
+};
+request.onupgradeneeded = e => {
+  const db = event.target.result;
+
+  const objectStore = db.createObjectStore('data', {
+    keyPath: 'key',
+  });
+  objectStore.createIndex('data', 'key', { unique: true });
+  objectStore.transaction.oncomplete = e => {
+    // nothing
+  };
+};
+</script>
+</body>
+</html>

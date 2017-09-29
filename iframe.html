@@ -80,6 +80,7 @@ const _handleMessage = data => {
   }
 };
 window.addEventListener('message', e => {
+console.log('got message', e);
   const {data} = e;
   if (db) {
     _handleMessage(data);

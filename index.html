@@ -8,18 +8,18 @@ window.module = {
 </script>
 <script src="api.js"></script>
 <script>
-const {exports: apiLib} = module;
+const {exports: api} = module;
 module = null;
 
-apiLib('iframe.html')
-  .then(api => {
-    api.set('lol', 'zol')
-      .then(() => {
-        api.get('lol')
-          .then(result => {
-            console.log('result', result);
-          });
+api.set('lol', 'zol')
+  .then(() => {
+    api.get('lol')
+      .then(result => {
+        console.log('result', result);
       });
+  })
+  .catch(err => {
+    console.warn(err);
   });
 </script>
 </body>

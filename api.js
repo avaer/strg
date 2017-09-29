@@ -8,7 +8,7 @@ document.body.appendChild(iframe);
 let win = null;
 const queue = [];
 let ids = 0;
-const queues = {};
+let queues = {};
 let numRemovedQueues = 0;
 const _cleanupQueues = () => {
   if (++numRemovedQueues >= 16) {

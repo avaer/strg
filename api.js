@@ -33,7 +33,7 @@ iframe.addEventListener('load', e => {
 
   window.onmessage = e => {
     const {data} = e;
-    const {id, error = null, result = null} = data;
+    const {id, error, result} = data;
     queues[id](error, result);
     queues[id] = null;
     _cleanupQueues();

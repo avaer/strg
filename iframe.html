@@ -17,7 +17,7 @@ const _handleMessage = data => {
       request.onsuccess = e => {
         parent.postMessage({
           id,
-          result: e.target.result.value,
+          result: e.target.result && e.target.result.value,
         }, '*');
       };
       request.onerror = e => {

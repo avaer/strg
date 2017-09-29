@@ -2,6 +2,7 @@
 <html>
 <body>
 <script>
+console.log('load iframe');
 let db = null;
 const queue = [];
 const _handleMessage = data => {
@@ -92,6 +93,8 @@ console.log('got message', e);
 const request = window.indexedDB.open('database', 1);
 request.onsuccess = e => {  
   db = e.target.result;
+
+  console.log('iframe got db', db);
 
   for (let i = 0; i < queue.length; i++) {
     _handleMessage(queue[i]);

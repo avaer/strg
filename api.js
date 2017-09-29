@@ -1,5 +1,7 @@
+module.exports = src => {
+
 const iframe = document.createElement('iframe');
-iframe.src = 'iframe.html';
+iframe.src = src;
 iframe.style.cssText = 'display: none;';
 document.body.appendChild(iframe);
 
@@ -62,8 +64,10 @@ const _request = (method, args) => new Promise((accept, reject) => {
   };
 });
 
-module.exports = {
+return {
   get: key => _request('get', {key}),
   set: (key, value) => _request('set', {key, value}),
   remove: key => _request('remove', {key}),
+};
+
 };

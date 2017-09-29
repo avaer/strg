@@ -8,8 +8,10 @@ window.module = {
 </script>
 <script src="api.js"></script>
 <script>
-const {exports: api} = module;
+const {exports: apiLib} = module;
 module = null;
+
+const api = apiLib('iframe.html');
 
 api.set('lol', 'zol')
   .then(() => {

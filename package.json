@@ -16,7 +16,7 @@
     "url": "https://github.com/modulesio/strg/issues"
   },
   "homepage": "https://github.com/modulesio/strg#readme",
-  "dependencies": {
+  "devDependencies": {
     "express": "^4.16.0"
   }
 }

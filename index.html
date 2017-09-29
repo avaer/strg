@@ -1,7 +1,6 @@
 <!doctype html>
 <html>
 <body>
-<iframe id=iframe src="/iframe.html"></iframe>
 <script>
 window.module = {
   exports: {},
@@ -12,7 +11,7 @@ window.module = {
 const {exports: apiLib} = module;
 module = null;
 
-apiLib('/iframe.html')
+apiLib('iframe.html')
   .then(api => {
     api.set('lol', 'zol')
       .then(() => {

@@ -33,10 +33,14 @@ iframe.addEventListener('load', e => {
 
   window.onmessage = e => {
     const {data} = e;
-    const {id, error, result} = data;
-    queues[id](error, result);
-    queues[id] = null;
-    _cleanupQueues();
+    const {id} = data;
+    const queue = queues[id];
+    if (queue) {
+      const {error, result} = data;
+      queue(error, result);
+      queues[id] = null;
+      _cleanupQueues();
+    }
   };
 });
 iframe.addEventListener('error', err => {
@@ -51,7 +55,7 @@ const _request = (method, args) => new Promise((accept, reject) => {
     args,
   };
   if (win) {
-   win.postMessage(e, '*');
+    win.postMessage(e, '*');
   } else {
     queue.push(e);
   }

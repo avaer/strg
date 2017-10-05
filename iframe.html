@@ -101,7 +101,7 @@ request.onerror = e => {
   console.warn(e.target.error);
 };
 request.onupgradeneeded = e => {
-  const db = event.target.result;
+  const db = e.target.result;
 
   const objectStore = db.createObjectStore('data', {
     keyPath: 'key',

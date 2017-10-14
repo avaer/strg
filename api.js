@@ -1,5 +1,28 @@
 module.exports = src => {
 
+window.addEventListener('message', e => {
+  const {data} = e;
+  if (data._strg) {
+    if (data.type === 'init') {
+      win = iframe.contentWindow;
+
+      for (let i = 0; i < queue.length; i++) {
+        win.postMessage(queue[i], '*');
+      }
+      queue.length = 0;
+    } else if (data.type === 'response') {
+      const {id} = data;
+      const queue = queues[id];
+      if (queue) {
+        const {error, result} = data;
+        queue(error, result);
+        queues[id] = null;
+        _cleanupQueues();
+      }
+    }
+  }
+});
+
 const iframe = document.createElement('iframe');
 iframe.src = src;
 iframe.style.cssText = 'display: none;';
@@ -23,26 +46,6 @@ const _cleanupQueues = () => {
     numRemovedQueues = 0;
   }
 };
-iframe.addEventListener('load', e => {
-  win = iframe.contentWindow;
-
-  for (let i = 0; i < queue.length; i++) {
-    win.postMessage(queue[i], '*');
-  }
-  queue.length = 0;
-
-  window.onmessage = e => {
-    const {data} = e;
-    const {id} = data;
-    const queue = queues[id];
-    if (queue) {
-      const {error, result} = data;
-      queue(error, result);
-      queues[id] = null;
-      _cleanupQueues();
-    }
-  };
-});
 iframe.addEventListener('error', err => {
   console.warn(err);
 });

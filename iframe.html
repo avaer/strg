@@ -3,8 +3,8 @@
 <body>
 <script>
 let db = null;
-const queue = [];
-const _handleMessage = data => {
+window.addEventListener('message', e => {
+  const {data} = e;
   const {id, method, args} = data;
 
   switch (method) {
@@ -16,12 +16,16 @@ const _handleMessage = data => {
       const request = objectStore.get(key);
       request.onsuccess = e => {
         parent.postMessage({
+          _strg: true,
+          type: 'response',
           id,
           result: e.target.result && e.target.result.value,
         }, '*');
       };
       request.onerror = e => {
         parent.postMessage({
+          _strg: true,
+          type: 'response',
           id,
           error: e.target.error,
         }, '*');
@@ -40,12 +44,16 @@ const _handleMessage = data => {
       });
       transaction.oncomplete = e => {
         parent.postMessage({
+          _strg: true,
+          type: 'response',
           id,
           result: null,
         }, '*');
       };
       transaction.onerror = e => {
         parent.postMessage({
+          _strg: true,
+          type: 'response',
           id,
           error: e.target.error,
         }, '*');
@@ -61,12 +69,16 @@ const _handleMessage = data => {
       objectStore.delete(key);
       transaction.oncomplete = e => {
         parent.postMessage({
+          _strg: true,
+          type: 'response',
           id,
           result: null,
         }, '*');
       };
       transaction.onerror = e => {
         parent.postMessage({
+          _strg: true,
+          type: 'response',
           id,
           error: e.target.error,
         }, '*');
@@ -78,24 +90,16 @@ const _handleMessage = data => {
       
     }
   }
-};
-window.addEventListener('message', e => {
-  const {data} = e;
-  if (db) {
-    _handleMessage(data);
-  } else {
-    queue.push(data);
-  }
 });
 
 const request = window.indexedDB.open('database', 1);
 request.onsuccess = e => {  
   db = e.target.result;
 
-  for (let i = 0; i < queue.length; i++) {
-    _handleMessage(queue[i]);
-  }
-  queue.length = 0;
+  parent.postMessage({
+    _strg: true,
+    type: 'init',
+  }, '*');
 };
 request.onerror = e => {
   console.warn(e.target.error);
